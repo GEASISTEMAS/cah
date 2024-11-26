@@ -62,12 +62,8 @@
     .text-content p {
       margin: 0 0 10px;
     }
-    .hidden-content {
-      display: none;
-    }
     .button-container {
       text-align: center;
-      margin-top: 20px;
     }
     .button {
       background-color: #1e2a36;
@@ -93,16 +89,16 @@
       font-weight: bold;
       color: #ff6347;
       display: block;
-      margin: 10px auto;
+      margin: 10px auto; /* Reduce el margen para acercar la flecha */
       width: 100%;
       text-align: center;
-      transform: scaleX(3.9);
+      transform: scaleX(3.9); /* Hacer la flecha más ancha */
     }
     .highlight {
       font-size: 24px;
       font-weight: bold;
       color: #ff6347;
-      margin-bottom: 5px;
+      margin-bottom: 5px; /* Reduce el margen para acercar al texto */
       text-align: center;
     }
     .unsubscribe {
@@ -149,39 +145,24 @@
       <p><strong>Estimado(a) Arnold Ulloa,</strong></p>
       <p>Estamos emocionados de anunciarte un nuevo beneficio exclusivo para todos los miembros del Colegio de Arquitectos de Honduras:</p>
       <p><strong>¡Programa de Asistencia Médica Integral Totalmente Gratuita!</strong></p>
-      <div class="hidden-content" id="hidden-content">
-        <p>¡Tu bienestar es nuestra prioridad! Nos complace informarte que como miembro del CAH, ya cuentas con un beneficio exclusivo y sin costo adicional que te ayudará a cuidar de ti y de tu familia: el Programa de Asistencia Médica Integral.</p>
-        <p>Este programa ha sido diseñado especialmente para ustedes, para brindarles acceso inmediato a una atención médica completa, asegurando que puedas disfrutar de una salud óptima sin preocupaciones. ¡Y lo mejor de todo! Ya está disponible para ti, sin ningún costo extra.</p>
-        <p>A través de este servicio, podrás acceder a consultas médicas, atención especializada y mucho más, sin tener que hacer ningún pago adicional. Queremos que aproveches esta excelente oportunidad para cuidar de tu salud y la de tus seres queridos.</p>
-        <p><strong>¿Cómo acceder al programa?</strong></p>
-        <p>¡No necesitas hacer nada extra! Es simple, ya estás cubierto. Solo por ser miembro del CAH tienes acceso a todos los beneficios de este programa. Si necesitas asistencia médica, simplemente comunícate al número 2216-1732. Nuestro equipo te coordinará la atención médica a nivel nacional, proporcionándote el nombre de la clínica, su dirección y los horarios de atención según tu ubicación.</p>
-        <p>No dudes en contactarnos si tienes alguna pregunta o necesitas más detalles sobre el programa. !Estamos aquí para ayudarte.¡</p>
-        <p><strong>Recuerda:</strong> ¡Tu salud es lo más importante, y este servicio está a tu disposición 24/7 a nivel nacional para ayudarte a mantenerte bien!</p>
-        <p>Este programa de Asistencia es operado por Grupo Especializado de Asistencia de Honduras (GEA).</P>
-      </div>
-    </div>
-    <div class="button-container">
-      <button class="button" onclick="toggleContent()">Leer más</button>
+      <p>¡Tu bienestar es nuestra prioridad! Nos complace informarte que como miembro del CAH, ya cuentas con un beneficio exclusivo y sin costo adicional que te ayudará a cuidar de ti y de tu familia: el Programa de Asistencia Médica Integral.</p>
+      <p>Este programa ha sido diseñado especialmente para ustedes, para brindarles acceso inmediato a una atención médica completa, asegurando que puedas disfrutar de una salud óptima sin preocupaciones. ¡Y lo mejor de todo! Ya está disponible para ti, sin ningún costo extra.</p>
+      <p>A través de este servicio, podrás acceder a consultas médicas, atención especializada y mucho más, sin tener que hacer ningún pago adicional. Queremos que aproveches esta excelente oportunidad para cuidar de tu salud y la de tus seres queridos.</p>
+      <p><strong>¿Cómo acceder al programa?</strong></p>
+      <p>¡No necesitas hacer nada extra! Es simple, ya estás cubierto. Solo por ser miembro del CAH tienes acceso a todos los beneficios de este programa. Si necesitas asistencia médica, simplemente comunícate al número 2216-1732. Nuestro equipo te coordinará la atención médica a nivel nacional, proporcionándote el nombre de la clínica, su dirección y los horarios de atención según tu ubicación.</p>
+      <p>No dudes en contactarnos si tienes alguna pregunta o necesitas más detalles sobre el programa. !Estamos aquí para ayudarte.¡</p>
+      <p><strong>Recuerda:</strong> ¡Tu salud es lo más importante, y este servicio está a tu disposición 24/7 a nivel nacional para ayudarte a mantenerte bien!</p>
+      <p>Este programa de Asistencia es operado por Grupo Especializado de Asistencia de Honduras (GEA).</P>
     </div>
     <div class="button-container">
       <div class="highlight">Descarga ahora y explora las coberturas y condiciones del Programa de Asistencia</div>
       <div class="arrow">⬇</div>
-      <a href="https://drive.google.com/file/d/1G_P23jeQ9-v6yHRNCNwd2W8IbTdNjAbD/view?usp=sharing" class="button"><strong>Click Aquí para descargar</strong></a>
+      <a href="https://drive.google.com/file/d/16i90TDl5yi0-m47MJnOVEsu6NIMk_4v8/view?usp=sharing" class="button"><strong>Click Aquí para descargar</strong></a>
     </div>
     <div class="unsubscribe">
       <p>Enviado por GEA HONDURAS</p>
       <p>Col. Tres Caminos ½ cuadra después de la Cámara de Comercio, Atrás de Televicentro, Edificio La Concordia, Tegucigalpa, Honduras • 08005</p>
     </div>
   </div>
-  <script>
-    function toggleContent() {
-      var hiddenContent = document.getElementById("hidden-content");
-      if (hiddenContent.style.display === "none") {
-        hiddenContent.style.display = "block";
-      } else {
-        hiddenContent.style.display = "none";
-      }
-    }
-  </script>
 </body>
 </html>
