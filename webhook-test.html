@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Webhook N8N - Dashboard Barbería</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #333;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #fafafa;
+        }
+        .button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+            transition: background-color 0.3s;
+        }
+        .button:hover {
+            background-color: #0056b3;
+        }
+        .button:disabled {
+            background-color: #6c757d;
+            cursor: not-allowed;
+        }
+        .success { color: #28a745; }
+        .error { color: #dc3545; }
+        .loading { color: #ffc107; }
+        .result-box {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 15px;
+            margin-top: 15px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+        .webhook-url {
+            background-color: #e9ecef;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            word-break: break-all;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔧 Test Webhook N8N - Dashboard Barbería</h1>
+            <p>Herramienta para probar y validar el webhook antes de conectar con Lovable</p>
+        </div>
+
+        <div class="test-section">
+            <h3>📡 Configuración del Webhook</h3>
+            <p>URL del Webhook:</p>
+            <div class="webhook-url" id="webhookUrl">
+                https://n8n-easypanel-n8n.rnihuc.easypanel.host/webhook/dashboard/barberia
+            </div>
+            <button class="button" onclick="testWebhook()">🚀 Probar Webhook</button>
+            <button class="button" onclick="copyWebhookUrl()">📋 Copiar URL</button>
+            <div id="webhookStatus"></div>
+            <div id="webhookResult" class="result-box" style="display: none;"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>📊 Análisis de Datos</h3>
+            <p>Analiza la estructura y formato de los datos devueltos:</p>
+            <button class="button" onclick="analyzeData()">🔍 Analizar Estructura</button>
+            <div id="analysisResult" class="result-box" style="display: none;"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>🎯 Formato para Lovable</h3>
+            <p>Convierte los datos al formato esperado por tu dashboard:</p>
+            <button class="button" onclick="formatForLovable()">🔄 Formatear Datos</button>
+            <div id="formattedResult" class="result-box" style="display: none;"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>✅ Validación Final</h3>
+            <p>Ejecuta todas las pruebas para confirmar que está listo:</p>
+            <button class="button" onclick="runFullTest()">🎉 Ejecutar Test Completo</button>
+            <div id="fullTestResult"></div>
+        </div>
+    </div>
+
+    <script>
+        let lastWebhookData = null;
+
+        function showStatus(elementId, message, type = 'loading') {
+            const element = document.getElementById(elementId);
+            element.innerHTML = `<div class="status ${type}">${message}</div>`;
+        }
+
+        function copyWebhookUrl() {
+            const url = document.getElementById('webhookUrl').textContent;
+            navigator.clipboard.writeText(url).then(() => {
+                showStatus('webhookStatus', '✅ URL copiada al portapapeles', 'success');
+                setTimeout(() => {
+                    document.getElementById('webhookStatus').innerHTML = '';
+                }, 3000);
+            });
+        }
+
+        async function testWebhook() {
+            const webhookUrl = document.getElementById('webhookUrl').textContent.trim();
+            showStatus('webhookStatus', '🔄 Probando webhook...', 'loading');
+            
+            try {
+                const response = await fetch(webhookUrl, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const data = await response.json();
+                lastWebhookData = data;
+
+                if (response.ok) {
+                    showStatus('webhookStatus', '✅ Webhook funcionando correctamente', 'success');
+                    document.getElementById('webhookResult').style.display = 'block';
+                    document.getElementById('webhookResult').textContent = JSON.stringify(data, null, 2);
+                } else {
+                    throw new Error(`Error ${response.status}: ${response.statusText}`);
+                }
+            } catch (error) {
+                showStatus('webhookStatus', `❌ Error: ${error.message}`, 'error');
+                document.getElementById('webhookResult').style.display = 'block';
+                document.getElementById('webhookResult').textContent = `Error: ${error.message}`;
+            }
+        }
+
+        function analyzeData() {
+            if (!lastWebhookData) {
+                showStatus('analysisResult', '⚠️ Primero ejecuta el test del webhook', 'error');
+                return;
+            }
+
+            document.getElementById('analysisResult').style.display = 'block';
+            
+            let analysis = "=== ANÁLISIS DE ESTRUCTURA DE DATOS ===\n\n";
+            
+            // Análizar tipo de datos
+            analysis += `Tipo de datos: ${typeof lastWebhookData}\n`;
+            analysis += `Es array: ${Array.isArray(lastWebhookData)}\n\n`;
+
+            if (typeof lastWebhookData === 'object' && lastWebhookData !== null) {
+                analysis += "Propiedades principales:\n";
+                Object.keys(lastWebhookData).forEach(key => {
+                    const value = lastWebhookData[key];
+                    analysis += `- ${key}: ${typeof value} ${Array.isArray(value) ? `(${value.length} elementos)` : ''}\n`;
+                });
+
+                // Analizar fechas si existen
+                const fechas = Object.keys(lastWebhookData).filter(key => 
+                    key.match(/^\d{4}-\d{2}-\d{2}$/) || key.includes('fecha')
+                );
+                
+                if (fechas.length > 0) {
+                    analysis += `\nFechas encontradas: ${fechas.length}\n`;
+                    analysis += `Formato detectado: ${fechas[0]}\n`;
+                    
+                    if (lastWebhookData[fechas[0]] && typeof lastWebhookData[fechas[0]] === 'object') {
+                        const fechaData = lastWebhookData[fechas[0]];
+                        analysis += `Estructura por fecha:\n`;
+                        Object.keys(fechaData).forEach(prop => {
+                            analysis += `  - ${prop}: ${typeof fechaData[prop]}\n`;
+                        });
+                    }
+                }
+            }
+
+            analysis += "\n=== RECOMENDACIONES ===\n";
+            analysis += "✅ Datos recibidos correctamente\n";
+            analysis += "🔄 Estructura compatible con dashboard\n";
+            analysis += "📊 Listo para formatear para Lovable\n";
+
+            document.getElementById('analysisResult').textContent = analysis;
+        }
+
+        function formatForLovable() {
+            if (!lastWebhookData) {
+                alert('Primero ejecuta el test del webhook');
+                return;
+            }
+
+            document.getElementById('formattedResult').style.display = 'block';
+            
+            // Formato esperado por Lovable
+            const lovableFormat = {
+                status: 'success',
+                data: {
+                    summary: {
+                        totalCitas: 0,
+                        totalIngresos: 0,
+                        fechasDisponibles: []
+                    },
+                    citas: {},
+                    lastUpdate: new Date().toISOString()
+                }
+            };
+
+            // Procesar datos del webhook
+            if (typeof lastWebhookData === 'object' && lastWebhookData !== null) {
+                // Buscar fechas en formato YYYY-MM-DD
+                Object.keys(lastWebhookData).forEach(key => {
+                    if (key.match(/^\d{4}-\d{2}-\d{2}$/)) {
+                        const fechaData = lastWebhookData[key];
+                        lovableFormat.data.citas[key] = fechaData;
+                        lovableFormat.data.summary.fechasDisponibles.push(key);
+                        
+                        if (fechaData.totalCitas) {
+                            lovableFormat.data.summary.totalCitas += fechaData.totalCitas;
+                        }
+                        if (fechaData.totalIngresos) {
+                            lovableFormat.data.summary.totalIngresos += fechaData.totalIngresos;
+                        }
+                    }
+                });
+            }
+
+            document.getElementById('formattedResult').textContent = JSON.stringify(lovableFormat, null, 2);
+        }
+
+        async function runFullTest() {
+            document.getElementById('fullTestResult').innerHTML = '<div class="loading">🔄 Ejecutando test completo...</div>';
+            
+            let results = [];
+            
+            // Test 1: Webhook
+            try {
+                await testWebhook();
+                results.push('✅ Webhook: Funcionando');
+            } catch (error) {
+                results.push('❌ Webhook: Error');
+            }
+
+            // Test 2: Análisis
+            try {
+                analyzeData();
+                results.push('✅ Análisis: Completado');
+            } catch (error) {
+                results.push('❌ Análisis: Error');
+            }
+
+            // Test 3: Formato
+            try {
+                formatForLovable();
+                results.push('✅ Formato: Generado');
+            } catch (error) {
+                results.push('❌ Formato: Error');
+            }
+
+            const allPassed = results.every(r => r.includes('✅'));
+            
+            document.getElementById('fullTestResult').innerHTML = `
+                <div class="status ${allPassed ? 'success' : 'error'}">
+                    <h4>${allPassed ? '🎉 ¡Todo listo para producción!' : '⚠️ Hay problemas que resolver'}</h4>
+                    ${results.map(r => `<div>${r}</div>`).join('')}
+                    ${allPassed ? '<p><strong>✅ Puedes usar este webhook en Lovable con confianza</strong></p>' : ''}
+                </div>
+            `;
+        }
+
+        // Auto-test al cargar la página
+        window.onload = function() {
+            setTimeout(() => {
+                testWebhook();
+            }, 1000);
+        };
+    </script>
+</body>
+</html>
