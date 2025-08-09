@@ -182,35 +182,74 @@
             analysis += `Es array: ${Array.isArray(lastWebhookData)}\n\n`;
 
             if (typeof lastWebhookData === 'object' && lastWebhookData !== null) {
-                analysis += "Propiedades principales:\n";
-                Object.keys(lastWebhookData).forEach(key => {
-                    const value = lastWebhookData[key];
-                    analysis += `- ${key}: ${typeof value} ${Array.isArray(value) ? `(${value.length} elementos)` : ''}\n`;
-                });
-
-                // Analizar fechas si existen
-                const fechas = Object.keys(lastWebhookData).filter(key => 
-                    key.match(/^\d{4}-\d{2}-\d{2}$/) || key.includes('fecha')
-                );
-                
-                if (fechas.length > 0) {
-                    analysis += `\nFechas encontradas: ${fechas.length}\n`;
-                    analysis += `Formato detectado: ${fechas[0]}\n`;
+                // Verificar si hay error en los datos
+                if (lastWebhookData.error) {
+                    analysis += "❌ ERROR DETECTADO:\n";
+                    analysis += `${lastWebhookData.error}\n\n`;
                     
-                    if (lastWebhookData[fechas[0]] && typeof lastWebhookData[fechas[0]] === 'object') {
-                        const fechaData = lastWebhookData[fechas[0]];
-                        analysis += `Estructura por fecha:\n`;
-                        Object.keys(fechaData).forEach(prop => {
-                            analysis += `  - ${prop}: ${typeof fechaData[prop]}\n`;
-                        });
+                    if (lastWebhookData.debug) {
+                        analysis += "DEBUG INFO:\n";
+                        analysis += `- Total inputs: ${lastWebhookData.debug.totalInputs}\n`;
+                        analysis += `- Sheets records: ${lastWebhookData.debug.sheetsRecords}\n`;
+                        analysis += `- Calendar events: ${lastWebhookData.debug.calendarEvents}\n`;
+                        
+                        if (lastWebhookData.debug.sheetsColumns) {
+                            analysis += `- Sheets columns: ${lastWebhookData.debug.sheetsColumns.join(', ')}\n`;
+                        }
+                        if (lastWebhookData.debug.calendarColumns) {
+                            analysis += `- Calendar columns: ${lastWebhookData.debug.calendarColumns.join(', ')}\n`;
+                        }
+                    }
+                } else {
+                    analysis += "Propiedades principales:\n";
+                    Object.keys(lastWebhookData).forEach(key => {
+                        const value = lastWebhookData[key];
+                        analysis += `- ${key}: ${typeof value} ${Array.isArray(value) ? `(${value.length} elementos)` : ''}\n`;
+                    });
+
+                    // Analizar fechas si existen
+                    const fechas = Object.keys(lastWebhookData).filter(key => 
+                        key.match(/^\d{4}-\d{2}-\d{2}$/) || key.includes('fecha')
+                    );
+                    
+                    if (fechas.length > 0) {
+                        analysis += `\nFechas encontradas: ${fechas.length}\n`;
+                        analysis += `Fechas: ${fechas.join(', ')}\n`;
+                        
+                        // Analizar primera fecha en detalle
+                        const primeraFecha = fechas[0];
+                        if (lastWebhookData[primeraFecha] && typeof lastWebhookData[primeraFecha] === 'object') {
+                            const fechaData = lastWebhookData[primeraFecha];
+                            analysis += `\nEstructura de ${primeraFecha}:\n`;
+                            analysis += `  - Total citas: ${fechaData.totalCitas || 0}\n`;
+                            analysis += `  - Total ingresos: $${fechaData.totalIngresos || 0}\n`;
+                            analysis += `  - Citas: ${fechaData.citas ? fechaData.citas.length : 0} registros\n`;
+                            
+                            if (fechaData.citas && fechaData.citas.length > 0) {
+                                const primeraCita = fechaData.citas[0];
+                                analysis += `\nEjemplo de cita:\n`;
+                                analysis += `  - Cliente: ${primeraCita.cliente}\n`;
+                                analysis += `  - Servicio: ${primeraCita.servicio}\n`;
+                                analysis += `  - Hora: ${primeraCita.hora}\n`;
+                                analysis += `  - Precio: $${primeraCita.precio}\n`;
+                                analysis += `  - Estado: ${primeraCita.estado}\n`;
+                                analysis += `  - Fuente: ${primeraCita.source}\n`;
+                            }
+                        }
                     }
                 }
             }
 
             analysis += "\n=== RECOMENDACIONES ===\n";
-            analysis += "✅ Datos recibidos correctamente\n";
-            analysis += "🔄 Estructura compatible con dashboard\n";
-            analysis += "📊 Listo para formatear para Lovable\n";
+            if (lastWebhookData.error) {
+                analysis += "❌ Hay errores que resolver\n";
+                analysis += "🔧 Revisa el nodo Function en N8N\n";
+                analysis += "📋 Verifica que Google Sheets y Calendar tengan datos\n";
+            } else {
+                analysis += "✅ Datos recibidos correctamente\n";
+                analysis += "🔄 Estructura compatible con dashboard\n";
+                analysis += "📊 Listo para formatear para Lovable\n";
+            }
 
             document.getElementById('analysisResult').textContent = analysis;
         }
